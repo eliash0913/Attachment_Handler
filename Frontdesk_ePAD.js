@@ -1,4 +1,4 @@
-app.addMenuItem({cName:"Work Order Checkout", cParent: "File", nPos: 0,    
+app.addMenuItem({cName:"Work Order Checkout", cParent: "File", nPos: 1,    
     cExec: "WOFRONT(this)"});
 
 
@@ -28,7 +28,7 @@ var currentTime = new Date()
 var month = currentTime.getMonth() + 1
 var day = currentTime.getDate()
 var year = currentTime.getFullYear()
-var signingTime = day +"/"+month+"/"+year  
+var signingTime = day +"/"+month+"/"+year
 var f = this.addField("date", "text", 0,[460, 32, 520, 16])
 f.value = signingTime;
 this.getField("date").readonly = true;
@@ -77,7 +77,7 @@ var currentTime = new Date()
 var month = currentTime.getMonth() + 1
 var day = currentTime.getDate()
 var year = currentTime.getFullYear()
-var signingTime = day +"/"+month+"/"+year  
+var signingTime = day +"/"+month+"/"+year
 var f = this.addField("date", "text", 0,[460, 32, 520, 16])
 f.value = signingTime;
 this.getField("date").readonly = true;
@@ -108,5 +108,3 @@ this.removeField("date");
 }
 }
 }
-
-

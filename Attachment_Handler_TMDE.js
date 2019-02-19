@@ -1,4 +1,4 @@
-var currentVersionTMDE="1.0"
+var currentVersionTMDE="1.2"
 //app.addSubMenu({cName:"DMLSS", cParent:"File", nPos: 0})
 app.addMenuItem({cName:"Attachment Handler for TMDE", cParent: "DMLSS", nPos: 0, cExec: "TMDE_AH(this)"});
 var filepath = "";
@@ -10,7 +10,7 @@ function TMDE_AH()
 			}
 		else
 		{
-		var dialog1 = { fpath: "", tpath: "", fpath_generic: "", WON_VAL: "", ECN_VAL: "", MFR_VAL: "",
+		var dialog1 = { fpath: "", tpath: "", cerdpath:"", fpath_generic: "", WON_VAL: "", ECN_VAL: "", MFR_VAL: "", CERD: "",
 		initialize: function(dialog) {
 			//dialog.load({"ECNN":this.defECN});
 			dialog.load({"rd01": true });
@@ -20,7 +20,7 @@ function TMDE_AH()
 			dialog.enable({
 				"rd01" : this.TypeofAttn,
 				"rd02" : this.TypeofAttn,
-				// "rd03" : this.TypeofAttn,
+				"rd03" : this.TypeofAttn,
 				// "rd04" : this.TypeofAttn,
 				// "rd05" : this.TypeofAttn,
 				// "ETCC" : this.ETCC,
@@ -31,6 +31,8 @@ function TMDE_AH()
 			this.WON_VAL=results["WONN"];
 			this.ECN_VAL=results["ECNN"];
 			this.MFR_VAL=results["MFRR"];
+			this.CERD=results["CERD"];
+			this.cerdpath="ECN"+results["ECNN"]+"_"+results["CERD"]+"_"+this.getNumAttn(results)+".pdf";
 			this.fpath = results["WONN"]+"_ECN"+results["ECNN"]+"_"+this.getNumAttn(results)+".pdf";
 			var NEWDATE=new Date();
 			var TOYEAR=String(NEWDATE.getFullYear());
@@ -55,7 +57,7 @@ function TMDE_AH()
 		,
 		getNumAttn: function (results) {
 			//for ( var i=1; i<=5; i++) {
-			for ( var i=1; i<=2; i++) {
+			for ( var i=1; i<=3; i++) {
 				if ( results["rd0"+i] ) {
 					switch (i) {
 						case 1:
@@ -63,9 +65,9 @@ function TMDE_AH()
 						break;
 						case 2:
 						var nAttns = "Quote";
-						// break;
-						// case 3:
-						// var nAttns = "SR";
+						break;
+						case 3:
+						var nAttns = "Cert";
 						// break;
 						// case 4:
 						// var nAttns = "Invoice";
@@ -173,6 +175,35 @@ function TMDE_AH()
 						},
 						{
 							type: "view",
+							align_children: "align_row",
+							elements:
+							[
+								{
+									type: "static_text",
+									name: "Certificate"
+								}
+							]
+						},
+						{
+							type: "view",
+							align_children: "align_row",
+							elements:
+							[
+								{
+									type: "static_text",
+									name: "Certified Date: "
+								},
+								{
+									item_id: "CERD",
+									type: "edit_text",
+									alignment: "align_fill",
+									width: 100,
+									height: 20
+								}
+							]
+						},
+						{
+							type: "view",
 							align_children: "align_fill",
 							elements:
 							[
@@ -191,6 +222,12 @@ function TMDE_AH()
 									item_id: "rd02",
 									group_id: "rado",
 									name: "Quote",
+								},
+								{
+									type: "radio",
+									item_id: "rd03",
+									group_id: "rado",
+									name: "Cert",
 								}
 								// },
 								// {
@@ -271,22 +308,24 @@ function TMDE_AH()
 	// 	TODATE="0"+TODATE;
 	// }
 	// var TODAY=String(FY)+TOMONTH+TODATE;
-	if (ATTNTYPE != "GPC" && ATTNTYPE != "Quote")
+	if (ATTNTYPE != "GPC" && ATTNTYPE != "Quote" && ATTNTYPE != "Cert")
 	{
 		ATTNTYPE="Others"
 	}
 	var savepath="/N/DMLSS/TMDE/"+ATTNTYPE+"/"+FY+"/"+dialog1.fpath
 	var savepath_generic="/N/DMLSS/TMDE/"+ATTNTYPE+"/"+FY+"/"+dialog1.fpath_generic
+	var savepathcert="/N/DMLSS/TMDE/"+ATTNTYPE+"/"+FY+"/"+dialog1.cerdpath
 	if( "ok" == retn)
 	{
 	while ("ok" == retn)
 		{
+			// app.alert(savepathcert);
 			// app.alert(dialog1.MFR_VAL.length);
 			// app.alert(dialog1.WON_VAL != "");
 			// app.alert(dialog1.ECN_VAL != "");
-			if ((dialog1.MFR_VAL.length != 0) & (dialog1.WON_VAL.length != "" | dialog1.ECN_VAL.length != ""))
+			if ((dialog1.MFR_VAL.length == 0) & (dialog1.WON_VAL.length == 0 | dialog1.ECN_VAL.length == 0) & (dialog1.CERD.length == 0))
 			{
-				app.alert("Please enter either (Work Order Number and ECN for Single Device) or (Manufacturer for Multiple Devices)")
+				app.alert("Please enter either Work Order Number and ECN (for Single Device) or Manufacturer for (Multiple Devices) or Certified Date")
 				retn = app.execDialog(dialog1);
 			}
 
@@ -294,8 +333,7 @@ function TMDE_AH()
 			{
 			if (dialog1.MFR_VAL.length != 0 | dialog1.MFR_VAL != null)
 			{
-
-				if ((dialog1.MFR_VAL != "0" | dialog1.MFR_VAL.length != 0) & ((dialog1.WON_VAL == null | dialog1.WON_VAL.length == 0) | (dialog1.ECN_VAL.length == 0 | dialog1.ECN_VAL == null)))
+				if (((dialog1.MFR_VAL != "0" | dialog1.MFR_VAL.length != 0) & ((dialog1.WON_VAL == null | dialog1.WON_VAL.length == 0) | (dialog1.ECN_VAL.length == 0 | dialog1.ECN_VAL == null))) & (dialog1.CERD.length == 0))
 				{
 						try
 						{
@@ -318,11 +356,29 @@ function TMDE_AH()
 							}
 						}
 					}
-				// 	else
-				// 	{
-				// 		retn = app.execDialog(dialog1);
-				// 	}
-				// }
+					else if (dialog1.CERD.length == 8) {
+						// savepath="/N/DMLSS/TMDE/"+ATTNTYPE+"/"+FY+"/"+dialog1.cerdpath
+
+						if (dialog1.ECN_VAL.length < 6)
+						{
+							var ECNfiller="0";
+							var ECNstandard="";
+							for (i=0; i <= 6-dialog1.ECN_VAL.length; i++)
+							{
+								ECNstandard=String(ECNfiller.repeat(i))+String(dialog1.ECN_VAL);
+							}
+							var savepathtemp=savepathcert.substring(savepathcert.indexOf("ECN"),savepathcert.indexOf("_"))
+							// app.alert(savepathtemp);
+							// app.alert(savepathcert);
+							// app.alert(ECNstandard);
+							savepathcert=savepathcert.replace(savepathtemp,"ECN"+ECNstandard);
+
+							this.saveAs({cPath: savepathcert, bPromptToOverwrite: true});
+						} else {
+						this.saveAs({cPath: savepathcert, bPromptToOverwrite: true});
+							// app.alert("B");
+					}
+					}
 				else
 				{
 					if (dialog1.ECN_VAL.length < 6)
@@ -335,6 +391,7 @@ function TMDE_AH()
 						}
 						var savepathtemp=savepath.substring(savepath.indexOf("ECN"),savepath.lastIndexOf("_"))
 						savepath=savepath.replace(savepathtemp,"ECN"+ECNstandard)
+						// app.alert(savepath);
 					}
 					try
 					{
@@ -357,8 +414,8 @@ function TMDE_AH()
 							}
 						}
 					}
-
 			}
+			// app.alert(savepath);
 				var temp_path=this.path;
 				var temp_linkpath=temp_path.substring(temp_path.indexOf('DMLSS')).replace(/\//g,"\\");
 				var linkpath="N:\\"+temp_linkpath;
@@ -371,6 +428,10 @@ function TMDE_AH()
 					if ( dialog1.WON_VAL.length != 12)
 					{
 						app.alert("The Work Order Number you entered: "+ dialog1.WON_VAL+"\n"+"Entered: "+dialog1.WON_VAL.length+"-digits"+"\n"+"Allowed: 12-digits")
+						retn = app.execDialog(dialog1);
+					}
+					else if (dialog1.CERD.length != 8) {
+						app.alert("The Certified Date you entered: "+ dialog1.CERD+"\n"+"Entered: "+dialog1.CERD.length+"-digits"+"\n"+"Allowed: 12-digits")
 						retn = app.execDialog(dialog1);
 					}
 					else if ( dialog1.ECN_VAL.length > 6)

@@ -1,4 +1,4 @@
-var currentVersionAcceptance="1.0"
+var currentVersionAcceptance="1.1"
 app.addMenuItem({cName:"Attachment Handler for Acceptance", cParent: "DMLSS", nPos: 0, cExec: "Acceptance_AH(this)"});
 var filepath = "";
 
@@ -9,7 +9,7 @@ function Acceptance_AH()
 			Validate_Version_Acceptance()
 			}
 		else
-		{	
+		{
 		var dialog1 = { fpath: "", tpath: "", fpath_NOECN: "", WOVF: "", ECVF: "", WOVT: "", ECVT: "",
 		initialize: function(dialog) {
 			//dialog.load({"ECNN":this.defECN});
@@ -233,17 +233,25 @@ function Acceptance_AH()
 
 	if( "ok" == retn)
 	{
-		//app.alert(dialog1.WOVF);
+		getMONTH=Number(dialog1.WOVF[4]+dialog1.WOVF[5]);
+		var MONTH_DIR = new Array("1_JAN","2_FEB","3_MAR","4_APR","5_MAY","6_JUN","7_JUL","8_AUG","9_SEP","10_OCT","11_NOV","12_DEC");
+		if (getMONTH > 12) {
+			app.alert(getMONTH)
+			app.alert("Please check your work order number.")
+			return 0;
+		}
+		// app.alert(MONTH_DIR[getMONTH-1]);
+
 		//app.alert(dialog1.WOVT);
 		if (dialog1.WOVT.length == 0)
 		{
 			//dialog1.WOVT = "";
-			var savepath="/N/DMLSS/Acceptance/"+ATTNTYPE+"Document"+"/"+FY+"/"+dialog1.fpath
+			var savepath="/N/DMLSS/Acceptance/"+ATTNTYPE+"Document"+"/"+FY+"/"+MONTH_DIR[getMONTH-1]+"/"+dialog1.fpath
 		}
 		else {
-			var savepath="/N/DMLSS/Acceptance/"+ATTNTYPE+"Document"+"/"+FY+"/"+dialog1.mfpath
+			var savepath="/N/DMLSS/Acceptance/"+ATTNTYPE+"Document"+"/"+FY+"/"+MONTH_DIR[getMONTH-1]+"/"+dialog1.mfpath
 		}
-			var savepath_NOECN="/N/DMLSS/Acceptance/"+ATTNTYPE+"Document"+"/"+FY+"/"+dialog1.fpath_NOECN
+			var savepath_NOECN="/N/DMLSS/Acceptance/"+ATTNTYPE+"Document"+"/"+FY+"/"+MONTH_DIR[getMONTH-1]+"/"+dialog1.fpath_NOECN
 	validate_first=dialog1.WOVT.length == 4 | dialog1.WOVT.length == 0;
 	while ("ok" == retn)
 		{

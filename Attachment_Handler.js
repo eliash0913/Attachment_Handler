@@ -9,7 +9,7 @@ function AttachmentHandler()
 			Validate_Version()
 			}
 	else
-	{	
+	{
 		var dialog1 = { fpath: "", tpath: "", fpath_NOECN: "", WON_VAL: "", ECN_VAL: "",
 		initialize: function(dialog) {
 			//dialog.load({"ECNN":this.defECN});
