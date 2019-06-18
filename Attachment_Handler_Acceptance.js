@@ -1,5 +1,5 @@
-var currentVersionAcceptance="1.1"
-app.addMenuItem({cName:"Attachment Handler for Acceptance", cParent: "DMLSS", nPos: 0, cExec: "Acceptance_AH(this)"});
+var currentVersionAcceptance="1.3"
+app.addMenuItem({cName:"Attachment Handler for Acceptance", cParent: "DMLSS", nPos: 1, cExec: "Acceptance_AH(this)"});
 var filepath = "";
 
 function Acceptance_AH()

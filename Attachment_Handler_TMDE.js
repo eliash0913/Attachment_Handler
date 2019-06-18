@@ -1,6 +1,6 @@
-var currentVersionTMDE="1.2"
+var currentVersionTMDE="1.4"
 //app.addSubMenu({cName:"DMLSS", cParent:"File", nPos: 0})
-app.addMenuItem({cName:"Attachment Handler for TMDE", cParent: "DMLSS", nPos: 0, cExec: "TMDE_AH(this)"});
+app.addMenuItem({cName:"Attachment Handler for TMDE", cParent: "DMLSS", nPos: 2, cExec: "TMDE_AH(this)"});
 var filepath = "";
 function TMDE_AH()
 	{
@@ -21,7 +21,7 @@ function TMDE_AH()
 				"rd01" : this.TypeofAttn,
 				"rd02" : this.TypeofAttn,
 				"rd03" : this.TypeofAttn,
-				// "rd04" : this.TypeofAttn,
+				 "rd04" : this.TypeofAttn,
 				// "rd05" : this.TypeofAttn,
 				// "ETCC" : this.ETCC,
 				});
@@ -36,7 +36,7 @@ function TMDE_AH()
 			this.fpath = results["WONN"]+"_ECN"+results["ECNN"]+"_"+this.getNumAttn(results)+".pdf";
 			var NEWDATE=new Date();
 			var TOYEAR=String(NEWDATE.getFullYear());
-			var TOMONTH=String(NEWDATE.getMonth());
+			var TOMONTH=String(NEWDATE.getMonth()+1);
 			var TODATE=String(NEWDATE.getDate());
 			if (NEWDATE.getMonth() < 10)
 			{
@@ -57,20 +57,20 @@ function TMDE_AH()
 		,
 		getNumAttn: function (results) {
 			//for ( var i=1; i<=5; i++) {
-			for ( var i=1; i<=3; i++) {
+			for ( var i=1; i<=4; i++) {
 				if ( results["rd0"+i] ) {
 					switch (i) {
 						case 1:
 						var nAttns = "GPC";
 						break;
 						case 2:
-						var nAttns = "Quote";
+						var nAttns = "Quotes";
 						break;
 						case 3:
-						var nAttns = "Cert";
-						// break;
-						// case 4:
-						// var nAttns = "Invoice";
+						var nAttns = "Certificate";
+						break;
+						case 4:
+						var nAttns = results["ETCC"];
 						// break;
 						// case 5:
 						// var nAttns = results["ETCC"];
@@ -227,15 +227,15 @@ function TMDE_AH()
 									type: "radio",
 									item_id: "rd03",
 									group_id: "rado",
-									name: "Cert",
-								}
+									name: "Certificate",
+								},
 								// },
-								// {
-								// 	type: "radio",
-								// 	item_id: "rd03",
-								// 	group_id: "rado",
-								// 	name: "Service Report",
-								// },
+								{
+								 	type: "radio",
+									item_id: "rd04",
+									group_id: "rado",
+									name: "Other",
+								},
 								// {
 								// 	type: "radio",
 								// 	item_id: "rd04",
@@ -248,13 +248,13 @@ function TMDE_AH()
 								// 	group_id: "rado",
 								// 	name: "Other",
 								// },
-								// {
-								// 	item_id: "ETCC",
-								// 	type: "edit_text",
-								// 	alignment: "align_fill",
-								// 	width: 100,
-								// 	height: 20
-								// }
+								{
+								 	item_id: "ETCC",
+								 	type: "edit_text",
+								 	alignment: "align_fill",
+								 	width: 100,
+								 	height: 20
+								}
 							]
 						}
 						,
@@ -278,7 +278,7 @@ function TMDE_AH()
 			var data = dialog.store();
 			this.strName = data[ "usnm"];
 		},
-    description:
+   	 description:
 		{
 			name: "File Path", elements:
 			[
@@ -296,6 +296,7 @@ function TMDE_AH()
 	var retn = app.execDialog(dialog1);
 	var FY=new Date().getFullYear();
 	var ATTNTYPE=dialog1.tpath;
+	console.println(dialog1.tpath);
 	// var NEWDATE=new Date();
 	// var TOMONTH=String(NEWDATE.getMonth());
 	// var TODATE=String(NEWDATE.getDate());
@@ -308,10 +309,15 @@ function TMDE_AH()
 	// 	TODATE="0"+TODATE;
 	// }
 	// var TODAY=String(FY)+TOMONTH+TODATE;
-	if (ATTNTYPE != "GPC" && ATTNTYPE != "Quote" && ATTNTYPE != "Cert")
+	if (ATTNTYPE != "GPC" && ATTNTYPE != "Certificate" && ATTNTYPE != "Quotes")
 	{
+		//if(ATTNTYPE == "Quotes"){
+		//ATTNTYPE="Quotes"
+		//} else {
 		ATTNTYPE="Others"
+		//}
 	}
+	//console.println(dialog1.fpath);
 	var savepath="/N/DMLSS/TMDE/"+ATTNTYPE+"/"+FY+"/"+dialog1.fpath
 	var savepath_generic="/N/DMLSS/TMDE/"+ATTNTYPE+"/"+FY+"/"+dialog1.fpath_generic
 	var savepathcert="/N/DMLSS/TMDE/"+ATTNTYPE+"/"+FY+"/"+dialog1.cerdpath
@@ -355,6 +361,7 @@ function TMDE_AH()
 								}
 							}
 						}
+					savepath=savepath_generic;
 					}
 					else if (dialog1.CERD.length == 8) {
 						// savepath="/N/DMLSS/TMDE/"+ATTNTYPE+"/"+FY+"/"+dialog1.cerdpath
@@ -372,12 +379,13 @@ function TMDE_AH()
 							// app.alert(savepathcert);
 							// app.alert(ECNstandard);
 							savepathcert=savepathcert.replace(savepathtemp,"ECN"+ECNstandard);
-
+							
 							this.saveAs({cPath: savepathcert, bPromptToOverwrite: true});
 						} else {
 						this.saveAs({cPath: savepathcert, bPromptToOverwrite: true});
 							// app.alert("B");
-					}
+						}
+					savepath=savepathcert;
 					}
 				else
 				{
@@ -416,7 +424,8 @@ function TMDE_AH()
 					}
 			}
 			// app.alert(savepath);
-				var temp_path=this.path;
+				//var temp_path=this.path;
+				var temp_path=savepath;
 				var temp_linkpath=temp_path.substring(temp_path.indexOf('DMLSS')).replace(/\//g,"\\");
 				var linkpath="N:\\"+temp_linkpath;
 				dialPath.strName=linkpath;
@@ -453,5 +462,5 @@ function TMDE_AH()
 			}
 			}
 		}
-}
+	}
 }

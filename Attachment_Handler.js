@@ -1,19 +1,24 @@
-var currentVersion="1.1";
-app.addSubMenu({cName:"DMLSS", cParent:"File", nPos: 0})
-app.addMenuItem({cName:"Attachment Handler", cParent: "DMLSS", nPos: 0, cExec: "AttachmentHandler(this)"});
+// var currentVersion="1.1";
+	app.addSubMenu({cName:"DMLSS", cParent:"File", nPos: 0})
+	app.addMenuItem({cName:"Attachment Handler", cParent: "DMLSS", nPos: 0, cExec: "AttachmentHandler(this)"});
 var filepath = "";
 function AttachmentHandler()
 	{
-	if(currentVersion!=Version_checker())
-			{
-			Validate_Version()
-			}
-	else
-	{
-		var dialog1 = { fpath: "", tpath: "", fpath_NOECN: "", WON_VAL: "", ECN_VAL: "",
+	var currentMonth = new Date().getMonth()+1;
+	var monthFactor=[-1,-2,-3,-4,-5,-6,-7,-8,-9,-10,-11,-12];
+	monthFactor[currentMonth]=monthFactor[currentMonth-1]*-1
+	folderMonthStr=["1_JAN","2_FEB","3_MAR","4_APR","5_MAY","6_JUN","7_JUL","8_AUG","9_SEP","10_OCT","11_NOV","12_DEC"];
+	var oData={"January": monthFactor[0], "February": monthFactor[1], "March": monthFactor[2], "April": monthFactor[3], "May": monthFactor[4], "June": monthFactor[5], "July": monthFactor[6], "August": monthFactor[7], "September": monthFactor[8], "October": monthFactor[9], "November": monthFactor[10], "December": monthFactor[11]}
+	var output="";
+	// if(currentVersion!=Version_checker())
+	// 		{
+	// 		Validate_Version()
+	// 		}
+	// else
+	// {
+		var dialog1 = { fpath: "", tpath: "", fpath_NOECN: "", pathSPR: "", WON_VAL: "", ECN_VAL: "",
 		initialize: function(dialog) {
-			//dialog.load({"ECNN":this.defECN});
-			dialog.load({"rd01": true });
+			this.loadDefaults(dialog);
 			this.TypeofAttn = true;
 			dialog.enable({
 				"rd01" : this.TypeofAttn,
@@ -21,20 +26,34 @@ function AttachmentHandler()
 				"rd03" : this.TypeofAttn,
 				"rd04" : this.TypeofAttn,
 				"rd05" : this.TypeofAttn,
-				"rd06" : this.TypeofAttn,
+        "rd06" : this.TypeofAttn,
+				"rd07" : this.TypeofAttn,
 			});
 		},
 		commit:function (dialog) {
 			var results = dialog.store();
+      var elements = dialog.store()["subl"];
 			this.WON_VAL=results["WONN"];
 			this.ECN_VAL=results["ECNN"];
 			this.fpath = results["WONN"]+"_ECN"+results["ECNN"]+"_"+this.getNumAttn(results)+".pdf";
 			this.fpath_NOECN = results["WONN"]+"_"+this.getNumAttn(results)+".pdf";
+			this.pathSPR = results["WONN"]+"_"+this.getNumAttn(results)+".pdf";
 			this.tpath=this.getNumAttn(results);
-		}
-		,
+
+      for(var i in elements) {
+				if ( elements[i] > 0 ) {
+					console.println(folderMonthStr[elements[i]]);
+					locFolder=folderMonthStr[elements[i]];
+        }
+        }
+		},
+        loadDefaults: function (dialog) {
+        dialog.load({
+        subl:oData
+        })
+        },
 		getNumAttn: function (results) {
-			for ( var i=1; i<=6; i++) {
+			for ( var i=1; i<=7; i++) {
 				if ( results["rd0"+i] ) {
 					switch (i) {
 						case 1:
@@ -52,7 +71,10 @@ function AttachmentHandler()
 						case 5:
 						var nAttns = "ECAT";
 						break;
-						case 6:
+            case 6:
+            var nAttns = "SPR";
+						break;
+						case 7:
 						var nAttns = results["ETCC"];
 					}
 				}
@@ -71,6 +93,7 @@ function AttachmentHandler()
 					type: "cluster",
 					name: "Work Order Information",
 					align_children: "align_right",
+					// align_children: "align_right",
 					elements:
 					[
 						{
@@ -111,7 +134,8 @@ function AttachmentHandler()
 						},
 						{
 							type: "view",
-							align_children: "align_fill",
+							// align_children: "align_fill",
+							align_children: "align_left",
 							elements:
 							[
 								{
@@ -149,17 +173,43 @@ function AttachmentHandler()
 									name: "ECAT",
 								},
 								{
-									type: "radio",
-									item_id: "rd06",
-									group_id: "rado",
-									name: "Other",
-								},
-								{
-									item_id: "ETCC",
-									type: "edit_text",
-									alignment: "align_fill",
-									width: 100,
-									height: 20
+                type: "view",
+                align_children: "align_row",
+                elements:
+                [
+									{
+										type: "radio",
+										item_id: "rd06",
+										group_id: "rado",
+										name: "SPR for",
+									},
+									{
+										type: "popup",
+										item_id:"subl",
+										width: 100,
+										height: 20
+									}
+								]
+							},
+              {
+										type: "view",
+										align_children: "align_row",
+										elements:
+										[
+										{
+										type: "radio",
+										item_id: "rd07",
+										group_id: "rado",
+										name: "Other",
+										},
+										{
+										item_id: "ETCC",
+										type: "edit_text",
+										alignment: "align_fill",
+										width: 100,
+										height: 20
+										}
+										]
 								}
 							]
 						}
@@ -202,11 +252,12 @@ function AttachmentHandler()
 	var retn = app.execDialog(dialog1);
 	var FY=new Date().getFullYear();
 	var ATTNTYPE=dialog1.tpath;
-	if (ATTNTYPE != "GPC" && ATTNTYPE != "Quote" && ATTNTYPE != "SR" && ATTNTYPE != "Invoice" && ATTNTYPE != "ECAT")
+	if (ATTNTYPE != "GPC" && ATTNTYPE != "Quote" && ATTNTYPE != "SR" && ATTNTYPE != "Invoice" && ATTNTYPE != "ECAT" && ATTNTYPE != "SPR")
 	{
 		ATTNTYPE="Others"
 	}
 	var savepath="/N/DMLSS/"+ATTNTYPE+"/"+FY+"/"+dialog1.fpath
+  var savepath_SPR="/N/DMLSS/"+ATTNTYPE+"/"+FY+"/"+locFolder+"/"+dialog1.pathSPR
 	var savepath_NOECN="/N/DMLSS/"+ATTNTYPE+"/"+FY+"/"+dialog1.fpath_NOECN
 	if( "ok" == retn)
 	{
@@ -214,9 +265,16 @@ function AttachmentHandler()
 		{
 			if (dialog1.WON_VAL != null & dialog1.WON_VAL.length == 12 & dialog1.ECN_VAL.length <= 6)
 			{
+
 				if (dialog1.WON_VAL == null | dialog1.ECN_VAL.length == 0)
 				{
-					var ECNVERIFICATION = app.alert("You didn't enter ECN.\nIf this Work Order does NOT have ECN, Click yes to continue", 1,1, "Confirmation")
+					if(ATTNTYPE=="SPR"){
+						var ECNVERIFICATION=2;
+						savepath=savepath_SPR;
+					} else {
+						var ECNVERIFICATION = app.alert("You didn't enter ECN.\nIf this Work Order does NOT have ECN, Click yes to continue", 1,1, "Confirmation");
+					}
+
 					if (ECNVERIFICATION == 1)
 					{
 						try
@@ -239,8 +297,28 @@ function AttachmentHandler()
 								}
 							}
 						}
-					}
-					else
+					} else if (ECNVERIFICATION == 2){
+						try
+						{
+							this.saveAs({cPath: savepath, bPromptToOverwrite: true});
+						}
+						catch(e)
+						{
+							savepath=savepath.replace(".pdf","2.pdf")
+							for (i=2; i<100; i++)
+							{
+								try
+								{
+									this.saveAs({cPath: savepath, bPromptToOverwrite: true});
+									break;
+								}
+								catch(e)
+								{
+									savepath=savepath.replace(String(i)+".pdf",String(i+1)+".pdf")
+								}
+							}
+						}
+					}	else
 					{
 						retn = app.execDialog(dialog1);
 					}
@@ -260,7 +338,6 @@ function AttachmentHandler()
 					}
 					try
 					{
-						//app.alert(savepath)
 						this.saveAs({cPath: savepath, bPromptToOverwrite: true});
 					}
 					catch(e)
@@ -280,7 +357,7 @@ function AttachmentHandler()
 						}
 					}
 				}
-				var temp_path=this.path;
+				var temp_path=savepath;
 				var temp_linkpath=temp_path.substring(temp_path.indexOf('DMLSS')).replace(/\//g,"\\");
 				var linkpath="N:\\"+temp_linkpath;
 				dialPath.strName=linkpath;
@@ -307,5 +384,4 @@ function AttachmentHandler()
 				}
 			}
 		}
-}
 }
