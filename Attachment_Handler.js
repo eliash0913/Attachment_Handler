@@ -1,4 +1,4 @@
-// var currentVersion="1.1";
+var currentVersion="1.1";
 	app.addSubMenu({cName:"DMLSS", cParent:"File", nPos: 0})
 	app.addMenuItem({cName:"Attachment Handler", cParent: "DMLSS", nPos: 0, cExec: "AttachmentHandler(this)"});
 var filepath = "";
@@ -10,12 +10,12 @@ function AttachmentHandler()
 	folderMonthStr=["1_JAN","2_FEB","3_MAR","4_APR","5_MAY","6_JUN","7_JUL","8_AUG","9_SEP","10_OCT","11_NOV","12_DEC"];
 	var oData={"January": monthFactor[0], "February": monthFactor[1], "March": monthFactor[2], "April": monthFactor[3], "May": monthFactor[4], "June": monthFactor[5], "July": monthFactor[6], "August": monthFactor[7], "September": monthFactor[8], "October": monthFactor[9], "November": monthFactor[10], "December": monthFactor[11]}
 	var output="";
-	// if(currentVersion!=Version_checker())
-	// 		{
-	// 		Validate_Version()
-	// 		}
-	// else
-	// {
+	if(currentVersion!=Version_checker())
+	 		{
+	 		Validate_Version()
+			}
+	else
+	{
 		var dialog1 = { fpath: "", tpath: "", fpath_NOECN: "", pathSPR: "", WON_VAL: "", ECN_VAL: "",
 		initialize: function(dialog) {
 			this.loadDefaults(dialog);
@@ -42,7 +42,7 @@ function AttachmentHandler()
 
       for(var i in elements) {
 				if ( elements[i] > 0 ) {
-					console.println(folderMonthStr[elements[i]]);
+					//console.println(folderMonthStr[elements[i]]);
 					locFolder=folderMonthStr[elements[i]];
         }
         }
@@ -257,7 +257,7 @@ function AttachmentHandler()
 		ATTNTYPE="Others"
 	}
 	var savepath="/N/DMLSS/"+ATTNTYPE+"/"+FY+"/"+dialog1.fpath
-  var savepath_SPR="/N/DMLSS/"+ATTNTYPE+"/"+FY+"/"+locFolder+"/"+dialog1.pathSPR
+	var savepath_SPR="/N/DMLSS/"+ATTNTYPE+"/"+FY+"/"+locFolder+"/"+dialog1.pathSPR
 	var savepath_NOECN="/N/DMLSS/"+ATTNTYPE+"/"+FY+"/"+dialog1.fpath_NOECN
 	if( "ok" == retn)
 	{
@@ -265,14 +265,13 @@ function AttachmentHandler()
 		{
 			if (dialog1.WON_VAL != null & dialog1.WON_VAL.length == 12 & dialog1.ECN_VAL.length <= 6)
 			{
-
 				if (dialog1.WON_VAL == null | dialog1.ECN_VAL.length == 0)
 				{
 					if(ATTNTYPE=="SPR"){
 						var ECNVERIFICATION=2;
 						savepath=savepath_SPR;
 					} else {
-						var ECNVERIFICATION = app.alert("You didn't enter ECN.\nIf this Work Order does NOT have ECN, Click yes to continue", 1,1, "Confirmation");
+					var ECNVERIFICATION = app.alert("You didn't enter ECN.\nIf this Work Order does NOT have ECN, Click yes to continue", 1,1, "Confirmation");
 					}
 
 					if (ECNVERIFICATION == 1)
@@ -297,7 +296,7 @@ function AttachmentHandler()
 								}
 							}
 						}
-					} else if (ECNVERIFICATION == 2){
+					} else if (ECNVERIFICATION == 2) {
 						try
 						{
 							this.saveAs({cPath: savepath, bPromptToOverwrite: true});
@@ -318,8 +317,7 @@ function AttachmentHandler()
 								}
 							}
 						}
-					}	else
-					{
+					} else {
 						retn = app.execDialog(dialog1);
 					}
 				}
@@ -384,4 +382,5 @@ function AttachmentHandler()
 				}
 			}
 		}
+}
 }
