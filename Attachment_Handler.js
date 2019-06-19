@@ -2,20 +2,54 @@ var currentVersion="1.1";
 	app.addSubMenu({cName:"DMLSS", cParent:"File", nPos: 0})
 	app.addMenuItem({cName:"Attachment Handler", cParent: "DMLSS", nPos: 0, cExec: "AttachmentHandler(this)"});
 var filepath = "";
+var locFolder = "";
 function AttachmentHandler()
 	{
 	var currentMonth = new Date().getMonth()+1;
 	var monthFactor=[-1,-2,-3,-4,-5,-6,-7,-8,-9,-10,-11,-12];
 	monthFactor[currentMonth]=monthFactor[currentMonth-1]*-1
 	folderMonthStr=["1_JAN","2_FEB","3_MAR","4_APR","5_MAY","6_JUN","7_JUL","8_AUG","9_SEP","10_OCT","11_NOV","12_DEC"];
-	var oData={"January": monthFactor[0], "February": monthFactor[1], "March": monthFactor[2], "April": monthFactor[3], "May": monthFactor[4], "June": monthFactor[5], "July": monthFactor[6], "August": monthFactor[7], "September": monthFactor[8], "October": monthFactor[9], "November": monthFactor[10], "December": monthFactor[11]}
+	// var Jan = "Jan";
+	// var oData={
+	// 	"1  January": monthFactor[0],
+	// 	"2  February": monthFactor[1],
+	// 	"3  March": monthFactor[2],
+	// 	"4  April": monthFactor[3],
+	// 	"5  May": monthFactor[4],
+	// 	"6  June": monthFactor[5],
+	// 	"7  July": monthFactor[6],
+	// 	"8  August": monthFactor[7],
+	// 	"9  September": monthFactor[8],
+	// 	"10 October": monthFactor[9],
+	// 	"11 November": monthFactor[10],
+	// 	"12 December": monthFactor[11]
+	// }
+
+	var oData={
+		"a. January": monthFactor[0],
+		"b. February": monthFactor[1],
+		"c. March": monthFactor[2],
+		"d. April": monthFactor[3],
+		"e. May": monthFactor[4],
+		"f. June": monthFactor[5],
+		"g. July": monthFactor[6],
+		"h. August": monthFactor[7],
+		"i. September": monthFactor[8],
+		"j. October": monthFactor[9],
+		"k. November": monthFactor[10],
+		"l. December": monthFactor[11]
+	}
+
+	// var oData={"January": monthFactor[0], "February": monthFactor[1], "March": monthFactor[2], "April": monthFactor[3], "May": monthFactor[4], "June": monthFactor[5], "July": monthFactor[6], "August": monthFactor[7], "September": monthFactor[8], "October": monthFactor[9], "November": monthFactor[10], "December": monthFactor[11]}
+// var mmm=["January","February", "March"]	;
+// var oData={ mmm[0]: monthFactor[0], mmm[1]: monthFactor[1], mmm[2]: monthFactor[2], "April": monthFactor[3], "May": monthFactor[4], "June": monthFactor[5], "July": monthFactor[6], "August": monthFactor[7], "September": monthFactor[8], "October": monthFactor[9], "November": monthFactor[10], "December": monthFactor[11]}
 	var output="";
-	if(currentVersion!=Version_checker())
-	 		{
-	 		Validate_Version()
-			}
-	else
-	{
+	// if(currentVersion!=Version_checker())
+	//  		{
+	//  		Validate_Version()
+	// 		}
+	// else
+	// {
 		var dialog1 = { fpath: "", tpath: "", fpath_NOECN: "", pathSPR: "", WON_VAL: "", ECN_VAL: "",
 		initialize: function(dialog) {
 			this.loadDefaults(dialog);
@@ -382,5 +416,5 @@ function AttachmentHandler()
 				}
 			}
 		}
-}
+// }
 }
