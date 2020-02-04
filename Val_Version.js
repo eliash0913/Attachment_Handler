@@ -1,9 +1,3 @@
-// try{
-// var getStatus="/MAMCFS03/DEPT$/CEB/DMLSS/Version/Status";
-// var getVersion="/MAMCFS03/DEPT$/CEB/DMLSS/Version/Version";
-// var getVersion_TMDE="/MAMCFS03/DEPT$/CEB/DMLSS/Version/Version_TMDE";
-// var getVersion_Acceptance="/MAMCFS03/DEPT$/CEB/DMLSS/Version/Version_Acceptance";
-// }
 var getStatus="N:/DMLSS/Version/Status";
 var getVersion="N:/DMLSS/Version/Version";
 var getVersion_TMDE="N:/DMLSS/Version/Version_TMDE";
